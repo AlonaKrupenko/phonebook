@@ -1,0 +1,26 @@
+.contact-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.icon {
+  margin: 4px;
+  margin-right: 16px;
+  height: 25px;
+  width: 25px;
+  cursor: pointer;
+}
+.icon:last-child {
+  margin-right: 4px;
+}
+
+.icon.info:hover {
+  fill: #198754;
+}
+.icon.edit:hover {
+  fill: #ffc107;
+}
+.icon.delete:hover {
+  fill: #dc3545;
+}
