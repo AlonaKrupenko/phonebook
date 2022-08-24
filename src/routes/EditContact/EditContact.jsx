@@ -8,14 +8,16 @@ import InputGroup from "react-bootstrap/InputGroup";
 import Modal from "react-bootstrap/Modal";
 import CloseButton from "react-bootstrap/CloseButton";
 
+import "./style.scss";
+
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
 import { useSelector, useDispatch } from "react-redux";
 import contactsListSlice from "../../redux/contactsList";
 import { useNavigate, useParams } from "react-router-dom";
 
 function EditContact() {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [position, setPosition] = useState("");
   const [show, setShow] = useState(false);
 
   const dispatch = useDispatch();
@@ -30,40 +32,31 @@ function EditContact() {
     return el.id === id;
   });
 
-  const onChange = (type) => (e) => {
-    switch (type) {
-      case "name":
-        setName(e.target.value);
-        break;
+  const formik = useFormik({
+    initialValues: {
+      name: itemData.name,
+      phoneNumber: itemData.phoneNumber,
+      position: itemData.position,
+    },
 
-      case "phone":
-        setPhone(e.target.value);
-        break;
+    validationSchema: Yup.object({
+      name: Yup.string().required("Required"),
+      phoneNumber: Yup.number().required("Required"),
+    }),
 
-      case "position":
-        setPosition(e.target.value);
-        break;
-    }
-  };
+    onSubmit: (values) => {
+      dispatch(
+        contactsListSlice.actions.edit({
+          id: id,
+          name: values.name,
+          phoneNumber: values.phoneNumber,
+          position: values.position,
+        })
+      );
+      navigate("/");
+    },
+  });
 
-  const updatedEl = {
-    id: id,
-    name: name ? name : itemData.name,
-    phoneNumber: phone ? phone : itemData.phoneNumber,
-    position: position ? position : itemData.position,
-  };
-
-  const toEditContact = () => {
-    dispatch(
-      contactsListSlice.actions.edit({
-        id: id,
-        name: updatedEl.name,
-        phoneNumber: updatedEl.phoneNumber,
-        position: updatedEl.position,
-      })
-    );
-    navigate("/");
-  };
   const toRemoveContact = () => {
     navigate("/remove/" + id);
   };
@@ -95,19 +88,28 @@ function EditContact() {
           </Button>
         </Modal.Footer>
       </Modal>
-      <div>
-        <Row className="text-start  border-bottom border-warning p-2">
+
+      <Form onSubmit={formik.handleSubmit} id="edit-contact-form">
+        <Row className="text-start border-bottom border-warning p-2">
           <Col className="align-self-center">Name:</Col>
           <Col>
             <InputGroup>
               <Form.Control
+                className={
+                  formik.touched.name && formik.errors.name
+                    ? "required-field"
+                    : null
+                }
+                variant="success"
+                name="name"
+                type="text"
                 placeholder={itemData.name}
-                aria-label="Username"
-                aria-describedby="basic-addon1"
-                value={name}
-                onChange={onChange("name")}
+                {...formik.getFieldProps("name")}
               />
             </InputGroup>
+            {formik.touched.name && formik.errors.name ? (
+              <div className="text-danger">{formik.errors.name}</div>
+            ) : null}
           </Col>
         </Row>
         <Row className="text-start border-bottom border-warning p-2 ">
@@ -115,13 +117,20 @@ function EditContact() {
           <Col>
             <InputGroup>
               <Form.Control
+                className={
+                  formik.touched.phoneNumber && formik.errors.phoneNumber
+                    ? "required-field"
+                    : null
+                }
+                name="phoneNumber"
+                type="phone"
                 placeholder={itemData.phoneNumber}
-                aria-label="Username"
-                aria-describedby="basic-addon1"
-                value={phone}
-                onChange={onChange("phone")}
+                {...formik.getFieldProps("phoneNumber")}
               />
             </InputGroup>
+            {formik.touched.phoneNumber && formik.errors.phoneNumber ? (
+              <div className="text-danger">{formik.errors.phoneNumber}</div>
+            ) : null}
           </Col>
         </Row>
         <Row className="text-start border-bottom border-warning p-2">
@@ -129,11 +138,10 @@ function EditContact() {
           <Col>
             <InputGroup>
               <Form.Control
+                name="position"
+                type="text"
                 placeholder={itemData.position}
-                aria-label="Username"
-                aria-describedby="basic-addon1"
-                value={position}
-                onChange={onChange("position")}
+                {...formik.getFieldProps("position")}
               />
             </InputGroup>
           </Col>
@@ -142,29 +150,24 @@ function EditContact() {
           <Col>Id:</Col>
           <Col>{itemData.id}</Col>
         </Row>
-      </div>
-
-      <div className="d-flex justify-content-between">
-        <div className="m-2">
+        <div className="d-flex justify-content-between">
+          <div className="m-2">
+            <Button type="submit" variant="outline-success" className="me-2">
+              Save changes
+            </Button>
+            <Button variant="outline-primary" onClick={handleShow}>
+              Undo changes
+            </Button>
+          </div>
           <Button
-            variant="outline-success"
-            className="me-2"
-            onClick={toEditContact}
+            variant="outline-danger"
+            className="m-2"
+            onClick={toRemoveContact}
           >
-            Save changes
-          </Button>
-          <Button variant="outline-primary" onClick={handleShow}>
-            Undo changes
+            Delete contact
           </Button>
         </div>
-        <Button
-          variant="outline-danger"
-          className="m-2"
-          onClick={toRemoveContact}
-        >
-          Delete contact
-        </Button>
-      </div>
+      </Form>
     </Container>
   );
 }

@@ -10,7 +10,7 @@ import "./style.scss";
 import { v4 as uuidv4 } from "uuid";
 
 import ContactItem from "../../components/ContactItem/ContactItem";
-import AddContactModal from "../../components/AddContact/AddContact";
+import AddContactModal from "../../components/AddContactModal/AddContactModal";
 
 import { useSelector, useDispatch } from "react-redux";
 import contactsListSlice from "../../redux/contactsList";
@@ -43,9 +43,6 @@ function ContactsList(props) {
     setModalShow(false);
   };
 
-  const selectItem = (id) => {
-    navigate("/info/" + id);
-  };
   const getInfo = (id) => {
     navigate("/info/" + id);
   };
@@ -68,16 +65,14 @@ function ContactsList(props) {
       );
     })
     .sort((a, b) => {
-      if (a.name > b.name) {
+      if (a.name.toUpperCase() > b.name.toUpperCase()) {
         return 1;
       }
-      if (a.name < b.name) {
+      if (a.name.toUpperCase() < b.name.toUpperCase()) {
         return -1;
       }
       return 0;
     });
-
-  console.log(listToRender, "listToRender");
 
   return (
     <Container className="contacts-block">
@@ -126,7 +121,7 @@ function ContactsList(props) {
                 as="li"
                 key={el.id}
                 item={el}
-                onSelect={selectItem}
+                onSelect={getInfo}
                 onInfoIconClick={getInfo}
                 onEditIconClick={editContact}
                 onRemoveIconClick={removeContact}
