@@ -4,6 +4,8 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 
+import "./style.scss";
+
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
@@ -31,7 +33,7 @@ function AddContactModal(props) {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Form onSubmit={formik.handleSubmit}>
+      <Form onSubmit={formik.handleSubmit} id="add-contact-form">
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
             Please fill data for adding contact
@@ -42,6 +44,11 @@ function AddContactModal(props) {
           <Form.Group className="mb-3">
             <Form.Label>Name</Form.Label>
             <Form.Control
+              className={
+                formik.touched.name && formik.errors.name
+                  ? "required-field"
+                  : null
+              }
               name="name"
               type="text"
               placeholder="Name"
@@ -55,6 +62,11 @@ function AddContactModal(props) {
           <Form.Group className="mb-3">
             <Form.Label>Phone number</Form.Label>
             <Form.Control
+              className={
+                formik.touched.phoneNumber && formik.errors.phoneNumber
+                  ? "required-field"
+                  : null
+              }
               name="phoneNumber"
               type="phone"
               placeholder="Phone"

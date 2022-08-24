@@ -100,7 +100,6 @@ function EditContact() {
                     ? "required-field"
                     : null
                 }
-                variant="success"
                 name="name"
                 type="text"
                 placeholder={itemData.name}
